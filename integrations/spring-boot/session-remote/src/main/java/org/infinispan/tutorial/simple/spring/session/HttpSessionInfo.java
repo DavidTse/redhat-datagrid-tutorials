@@ -2,7 +2,6 @@ package org.infinispan.tutorial.simple.spring.session;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CyclicBarrier;
 
@@ -45,8 +44,8 @@ public class HttpSessionInfo implements Serializable
 		if (user != null) return user;
 		try {
 			if (userBarrier == null) userBarrier = new CyclicBarrier(1);
-			userBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
+			userBarrier.wait();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -55,21 +54,15 @@ public class HttpSessionInfo implements Serializable
 
 	public void setUser(User user) {
 		this.user = user;
-		try {
-			if (userBarrier == null) userBarrier = new CyclicBarrier(1);
-			userBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (userBarrier != null) userBarrier.notifyAll();
 	}
 
 	public Account getAccount() {
 		if (account != null) return account;
 		try {
 			if (accountBarrier == null) accountBarrier = new CyclicBarrier(1);
-			accountBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
+			accountBarrier.wait();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -78,21 +71,15 @@ public class HttpSessionInfo implements Serializable
 
 	public void setAccount(Account account) {
 		this.account = account;
-		try {
-			if (accountBarrier == null) accountBarrier = new CyclicBarrier(1);
-			accountBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (accountBarrier != null) accountBarrier.notifyAll();
 	}
 
 	public ShoppingCart getShoppingCart() {
 		if (shoppingCart != null) return shoppingCart;
 		try {
 			if (shoppingCartBarrier == null) shoppingCartBarrier = new CyclicBarrier(1);
-			shoppingCartBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
+			shoppingCartBarrier.wait();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -101,21 +88,15 @@ public class HttpSessionInfo implements Serializable
 
 	public void setShoppingCart(ShoppingCart shoppingCart) {
 		this.shoppingCart = shoppingCart;
-		try {
-			if (shoppingCartBarrier == null) shoppingCartBarrier = new CyclicBarrier(1);
-			shoppingCartBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (shoppingCartBarrier != null) shoppingCartBarrier.notifyAll();
 	}
 
 	public ConcurrentHashMap<BigInteger, BigInteger> getConcurrentHashMap() {
 		if (concurrentHashMap != null) return concurrentHashMap;
 		try {
 			if (concurrentHashMapBarrier == null) concurrentHashMapBarrier = new CyclicBarrier(1);
-			concurrentHashMapBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
+			concurrentHashMapBarrier.wait();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -124,13 +105,7 @@ public class HttpSessionInfo implements Serializable
 
 	public void setConcurrentHashMap(ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap) {
 		this.concurrentHashMap = concurrentHashMap;
-		try {
-			if (concurrentHashMapBarrier == null) concurrentHashMapBarrier = new CyclicBarrier(1);
-			concurrentHashMapBarrier.await();
-		} catch (InterruptedException | BrokenBarrierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		if (concurrentHashMapBarrier != null) concurrentHashMapBarrier.notifyAll();
 	}
 
 	@Override
