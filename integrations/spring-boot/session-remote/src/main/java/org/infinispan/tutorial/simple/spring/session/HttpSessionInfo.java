@@ -30,7 +30,12 @@ public class HttpSessionInfo implements Serializable
 	
 	private ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap;
 	
-	public HttpSessionInfo() {}
+	public HttpSessionInfo() {
+		user = new User();
+		account = new Account();
+		shoppingCart = new ShoppingCart();
+		concurrentHashMap = new ConcurrentHashMap<>();
+	}
 
 	public String getSessionKey() {
 		return sessionKey;
@@ -41,71 +46,23 @@ public class HttpSessionInfo implements Serializable
 	}
 
 	public User getUser() {
-		if (user != null) return user;
-		try {
-			if (userBarrier == null) userBarrier = new CyclicBarrier(1);
-			userBarrier.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return user;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
-		if (userBarrier != null) userBarrier.notifyAll();
-	}
-
 	public Account getAccount() {
-		if (account != null) return account;
-		try {
-			if (accountBarrier == null) accountBarrier = new CyclicBarrier(1);
-			accountBarrier.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return account;
 	}
 
 	public void setAccount(Account account) {
 		this.account = account;
-		if (accountBarrier != null) accountBarrier.notifyAll();
 	}
 
 	public ShoppingCart getShoppingCart() {
-		if (shoppingCart != null) return shoppingCart;
-		try {
-			if (shoppingCartBarrier == null) shoppingCartBarrier = new CyclicBarrier(1);
-			shoppingCartBarrier.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return shoppingCart;
 	}
 
-	public void setShoppingCart(ShoppingCart shoppingCart) {
-		this.shoppingCart = shoppingCart;
-		if (shoppingCartBarrier != null) shoppingCartBarrier.notifyAll();
-	}
-
 	public ConcurrentHashMap<BigInteger, BigInteger> getConcurrentHashMap() {
-		if (concurrentHashMap != null) return concurrentHashMap;
-		try {
-			if (concurrentHashMapBarrier == null) concurrentHashMapBarrier = new CyclicBarrier(1);
-			concurrentHashMapBarrier.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return concurrentHashMap;
-	}
-
-	public void setConcurrentHashMap(ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap) {
-		this.concurrentHashMap = concurrentHashMap;
-		if (concurrentHashMapBarrier != null) concurrentHashMapBarrier.notifyAll();
 	}
 
 	@Override

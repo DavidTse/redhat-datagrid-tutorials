@@ -21,13 +21,13 @@ public class PopulateSessionInfoThread extends Thread
 	{
 		HttpSessionInfo httpSessionInfo = (HttpSessionInfo) session.getAttribute("user");
 		
+		User user = httpSessionInfo.getUser();
 		String name = (String) session.getAttribute("latest");
 		String email = (String) session.getAttribute("email");
 		String phone = (String) session.getAttribute("phone");
         long uuid2 = Long.parseLong(phone);
         
         UUID uuid = new UUID(1l, uuid2);
-        User user = new User();
         user.setUserID(uuid);
         user.setUserName(name);
 
@@ -38,10 +38,9 @@ public class PopulateSessionInfoThread extends Thread
         user.setEmails(emails);
         phones.add(phone);
         user.setPhones(phones);
+
         
-        httpSessionInfo.setUser(user);
-        
-        Account account = new Account();
+        Account account = httpSessionInfo.getAccount();
         account.setUserID(uuid);
         uuid = new UUID(2l, uuid2);
         account.setAccountID(uuid);
@@ -84,7 +83,7 @@ public class PopulateSessionInfoThread extends Thread
         account.setPaymentType("Credit Card");
         httpSessionInfo.setAccount(account);
         
-        ShoppingCart shoppingCart = new ShoppingCart();
+        ShoppingCart shoppingCart = httpSessionInfo.getShoppingCart();
         uuid = new UUID(3l, uuid2);
         shoppingCart.setCartID(uuid);
 
@@ -106,15 +105,22 @@ public class PopulateSessionInfoThread extends Thread
         itemlist3.add(item1);
         itemlist3.add(item2);
         shoppingCart.setItems(itemlist3);
-        httpSessionInfo.setShoppingCart(shoppingCart);
-        
-		ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = new ConcurrentHashMap<>();
-		for (int i = 1; i<6; i++) {
-			String index = Integer.toString(i);
-			BigInteger key = new BigInteger(index);
-			BigInteger value = new BigInteger(index);
-			concurrentHashMap.put(key, value);
+
+        try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		httpSessionInfo.setConcurrentHashMap(concurrentHashMap);
+        /*
+        ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = httpSessionInfo.getConcurrentHashMap();
+        for(int i = 1; i<6; i++) {
+        	String tmp = Integer.toString(i);
+        	BigInteger key = new BigInteger(tmp);
+        	BigInteger value = key.multiply(key);
+        	concurrentHashMap.put(key, value);
+        }
+        */
+        System.out.println("PopulateSessionInfoThread Done. "+System.currentTimeMillis());
 	}
 }
