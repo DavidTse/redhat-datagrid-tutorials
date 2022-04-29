@@ -37,10 +37,12 @@ public class WebController {
 	        session.setAttribute("user", httpSessionInfo);
         }
         
-        Thread thread1 = new CurrentModificationThread(session);
-        thread1.start();
-        Thread thread2 = new PopulateSessionInfoThread(session);
-        thread2.start();
+        for (int i=0; i<500; i++) {
+	        Thread thread1 = new CurrentModificationThread(session);
+	        thread1.start();
+	        Thread thread2 = new PopulateSessionInfoThread(session);
+	        thread2.start();
+        }
         
         model.addAttribute("sessionID", sessionID);
         model.addAttribute("user", httpSessionInfo);

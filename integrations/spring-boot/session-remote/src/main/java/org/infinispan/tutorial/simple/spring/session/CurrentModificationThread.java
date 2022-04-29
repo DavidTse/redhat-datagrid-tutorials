@@ -35,11 +35,13 @@ public class CurrentModificationThread extends Thread
 		BigInteger counter = concurrentHashMap.get(key);
 		counter = counter.add(new BigInteger("1"));
 		concurrentHashMap.put(key, counter);
+		
+		String objRef = Integer.toHexString(System.identityHashCode(concurrentHashMap));
 	    // It looks like the first 2 lines of this method are returning a reference
 	    // for concurrentHashMap so that it does not have to be set again in the session.
 	    // ConcurrentHashMap does not support write lock.
 	    // Turning on near cache improves performance.
 		//session.setAttribute("user", httpSessionInfo);
-		System.out.println("CurrentModificationThread Done. "+System.currentTimeMillis());
+		System.out.println("CurrentModificationThread Done. "+System.currentTimeMillis() +". " +objRef);
 	}
 }
