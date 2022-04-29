@@ -38,7 +38,7 @@ public class WebController {
         }
         
         for (int i=0; i<500; i++) {
-	        Thread thread1 = new CurrentModificationThread(session);
+	        Thread thread1 = new CurrentModificationThread(session, i);
 	        thread1.start();
 	        Thread thread2 = new PopulateSessionInfoThread(session);
 	        thread2.start();

@@ -125,6 +125,6 @@ public class PopulateSessionInfoThread extends Thread
         	concurrentHashMap.put(key, value);
         }
         */
-        System.out.println("PopulateSessionInfoThread Done. "+System.currentTimeMillis()+". " +objRef);
+        //System.out.println("PopulateSessionInfoThread Done. "+System.currentTimeMillis()+". " +objRef);
 	}
 }
