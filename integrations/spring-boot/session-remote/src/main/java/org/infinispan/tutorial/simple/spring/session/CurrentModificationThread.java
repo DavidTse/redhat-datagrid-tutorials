@@ -32,6 +32,15 @@ public class CurrentModificationThread extends Thread
 		int atomiccount = counter.incrementAndGet();
 		
 		String debug = null;
+		BigInteger key0 = new BigInteger("0");
+		BigInteger increment = new BigInteger("1");
+		BigInteger key1 = new BigInteger("1");
+		BigInteger key2 = new BigInteger("2");
+		BigInteger key3 = new BigInteger("3");
+		BigInteger bigatomiccount = new BigInteger(Integer.toString(atomiccount));
+		BigInteger bigindex = new BigInteger(Integer.toString(index));
+		BigInteger bigresetcount = new BigInteger(Integer.toString(resetcount));
+		
 		synchronized (concurrentHashMap) {
 			int size = concurrentHashMap.size();
 			if (size == 0) {
@@ -43,19 +52,12 @@ public class CurrentModificationThread extends Thread
 			    }
 			}
 	        
-			BigInteger key = new BigInteger("0");
-			BigInteger counter = concurrentHashMap.get(key);
-			counter = counter.add(new BigInteger("1"));
-			concurrentHashMap.put(key, counter);
-			
-			key = new BigInteger("1");
-			concurrentHashMap.put(key, new BigInteger(Integer.toString(atomiccount)));
-			
-			key = new BigInteger("2");
-			concurrentHashMap.put(key, new BigInteger(Integer.toString(index)));
-			
-			key = new BigInteger("3");
-			concurrentHashMap.put(key, new BigInteger(Integer.toString(resetcount)));
+			BigInteger counter = concurrentHashMap.get(key0);
+			counter = counter.add(increment);
+			concurrentHashMap.put(key0, counter);
+			concurrentHashMap.put(key1, bigatomiccount);			
+			concurrentHashMap.put(key2, bigindex);			
+			concurrentHashMap.put(key3, bigresetcount);
 			
 			debug = concurrentHashMap.toString();
 		}
