@@ -3,6 +3,7 @@ package org.infinispan.tutorial.simple.spring.session;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -106,14 +107,13 @@ public class PopulateSessionInfoThread extends Thread
         itemlist3.add(item2);
         shoppingCart.setItems(itemlist3);
 
-        try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        /*
         ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = httpSessionInfo.getConcurrentHashMap();
+        for (Entry<BigInteger, BigInteger> entry : concurrentHashMap.entrySet()) {
+        	System.out.println("PopulateSessionInfoThread::Key: " + entry.getKey() + ", Value: " + entry.getValue());
+        }
+        
+        /*
+        concurrentHashMap.clear();
         for(int i = 1; i<6; i++) {
         	String tmp = Integer.toString(i);
         	BigInteger key = new BigInteger(tmp);
