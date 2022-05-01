@@ -3,7 +3,6 @@ package org.infinispan.tutorial.simple.spring.session;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CyclicBarrier;
 
 public class HttpSessionInfo implements Serializable
 {
@@ -13,15 +12,7 @@ public class HttpSessionInfo implements Serializable
 	private static final long serialVersionUID = -5017611248203683707L;
 	
 	private String sessionKey;
-	
-	private transient CyclicBarrier userBarrier;
-	
-	private transient CyclicBarrier accountBarrier;
-	
-	private transient CyclicBarrier shoppingCartBarrier;
-	
-	private transient CyclicBarrier concurrentHashMapBarrier;
-	
+
 	private User user;
 	
 	private Account account;

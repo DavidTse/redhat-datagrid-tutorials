@@ -1,27 +1,50 @@
 package org.infinispan.tutorial.simple.spring.session;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * This is 1 of the 3 threads used by the WebController to duplicate 
+ * a scenario reported by a Red Hat customer
+ * 
+ * Thread1(CurrentModificationThread) getDocketList writing to ConcurrentHashMap 
+ * Thread2(PopulateSessionInfoThread) getMessage run longer than thread1
+ * Thread3(CheckingThread) opens a Docket from a DocketList, a ConcurrentHashMap
+ * 
+ * A better solution to simulate the effect of 500 login/logout is to use a
+ * for loop and HttpURLConnection
+ * <p>
+ * see https://github.com/DavidTse/datagrid, HttpURLConnectionLoadTest.java
+ * <p>
+ *
+ * @author David Tse
+ */
 public class PopulateSessionInfoThread extends Thread 
 {
 	private HttpSession session;
 	
-	public PopulateSessionInfoThread(HttpSession session)
+	//Solution: holds a reference to the top level container instead of Session
+	private HttpSessionInfo httpSessionInfo;
+	
+	private int index;
+	
+	public PopulateSessionInfoThread(HttpSession session, int index)
 	{
 		this.session = session;
+		
+		//Solution: holds a reference to the top level container instead of session
+		httpSessionInfo = (HttpSessionInfo) session.getAttribute("user");
+		
+		// Track the index for debugging
+		this.index = index;
 	}
 
 	public void run()
 	{
-		HttpSessionInfo httpSessionInfo = (HttpSessionInfo) session.getAttribute("user");
-		
+		// Make this thread runs a long time
 		for (int i=0; i<1000; i++) {
 			User user = httpSessionInfo.getUser();
 			String name = (String) session.getAttribute("latest");
@@ -41,7 +64,6 @@ public class PopulateSessionInfoThread extends Thread
 	        phones.add(phone);
 	        user.setPhones(phones);
 	
-	        
 	        Account account = httpSessionInfo.getAccount();
 	        account.setUserID(uuid);
 	        uuid = new UUID(2l, uuid2);
@@ -108,23 +130,8 @@ public class PopulateSessionInfoThread extends Thread
 	        itemlist3.add(item2);
 	        shoppingCart.setItems(itemlist3);
 		}
-        ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = httpSessionInfo.getConcurrentHashMap();
-        /*
-        for (Entry<BigInteger, BigInteger> entry : concurrentHashMap.entrySet()) {
-        	System.out.println("PopulateSessionInfoThread::Key: " + entry.getKey() + ", Value: " + entry.getValue());
-        }
-        */
-        String objRef = Integer.toHexString(System.identityHashCode(concurrentHashMap));
-        
-        /*
-        concurrentHashMap.clear();
-        for(int i = 1; i<6; i++) {
-        	String tmp = Integer.toString(i);
-        	BigInteger key = new BigInteger(tmp);
-        	BigInteger value = key.multiply(key);
-        	concurrentHashMap.put(key, value);
-        }
-        */
-        //System.out.println("PopulateSessionInfoThread Done. "+System.currentTimeMillis()+". " +objRef);
+		
+		String objRef = Integer.toHexString(System.identityHashCode(httpSessionInfo));
+        System.out.println("PopulateSessionInfoThread " + index + " " + objRef);
 	}
 }
