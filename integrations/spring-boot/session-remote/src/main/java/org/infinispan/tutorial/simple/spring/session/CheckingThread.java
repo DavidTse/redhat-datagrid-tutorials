@@ -10,30 +10,22 @@ import javax.servlet.http.HttpSession;
  * a scenario reported by a Red Hat customer
  * 
  * Thread1(CurrentModificationThread) getDocketList writing to ConcurrentHashMap 
- * Thread2(PopulateSessionInfoThread) getMessage run longer than thread1
+ * Thread2(PopulateAccountThread) getMessage run longer than thread1
  * Thread3(CheckingThread) opens a Docket from a DocketList, a ConcurrentHashMap
  * 
- * A better solution to simulate the effect of 500 login/logout is to use a
- * for loop and HttpURLConnection
- * <p>
- * see https://github.com/DavidTse/datagrid, HttpURLConnectionLoadTest.java
- * <p>
  *
  * @author David Tse
  */
 public class CheckingThread extends Thread 
 {
-	//private HttpSession session;
-	//Solution: holds a reference to the top level container instead of Session
-	private HttpSessionInfo httpSessionInfo;
+
+	private HttpSession session;
 	
 	private int index;
 	
 	public CheckingThread(HttpSession session, int index)
 	{
-		//this.httpSessionInfo = session;
-		//Solution: holds a reference to the top level container instead of session
-		httpSessionInfo = (HttpSessionInfo) session.getAttribute("user");
+		this.session = session;
 		
 		// Track the index for debugging
 		this.index = index;
@@ -41,14 +33,14 @@ public class CheckingThread extends Thread
 
 	public void run()
 	{
-		// Get object reference
-		String objRef = Integer.toHexString(System.identityHashCode(httpSessionInfo));
+        String sessionID = session.getId();
 		
-	    // Use the reference from httpSessionInfo to populate the concurrentHashMap
-		ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = httpSessionInfo.getConcurrentHashMap();
+		ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = 
+		(ConcurrentHashMap<BigInteger, BigInteger>) CacheManager.getCacheManager().getCacheData(sessionID, "docketList");
 		
         String debug = concurrentHashMap.toString();
         
-        System.out.println("CheckingThread "+ debug + " " + index + " " + objRef);
+		String objRef = Integer.toHexString(System.identityHashCode(concurrentHashMap));
+        System.out.println("CheckingThread " + index + " " + debug + " " + objRef);
 	}
 }

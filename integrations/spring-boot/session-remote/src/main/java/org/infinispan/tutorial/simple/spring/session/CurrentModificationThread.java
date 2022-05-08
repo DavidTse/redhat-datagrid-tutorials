@@ -11,14 +11,8 @@ import javax.servlet.http.HttpSession;
  * a scenario reported by a Red Hat customer
  * 
  * Thread1(CurrentModificationThread) getDocketList writes to ConcurrentHashMap 
- * Thread2(PopulateSessionInfoThread) getMessage runs longer than thread1
+ * Thread2(PopulateAccountThread) getMessage runs longer than thread1
  * Thread3(CheckingThread) opens a Docket from a DocketList, a ConcurrentHashMap
- * 
- * A better solution to simulate the effect of 500 login/logout is to use a
- * for loop and HttpURLConnection
- * <p>
- * see https://github.com/DavidTse/datagrid, HttpURLConnectionLoadTest.java
- * <p>
  *
  * @author David Tse
  */
@@ -28,17 +22,13 @@ public class CurrentModificationThread extends Thread
 	
 	private static AtomicInteger resetcounter;
 	
-	//private HttpSession session;
-	//Solution: holds a reference to the top level container instead of Session
-	private HttpSessionInfo httpSessionInfo;
+	private HttpSession session;
 	
 	private int index;
 	
 	public CurrentModificationThread(HttpSession session, int index)
 	{
-		//this.httpSessionInfo = session;
-		//Solution: holds a reference to the top level container instead of session
-		httpSessionInfo = (HttpSessionInfo) session.getAttribute("user");
+		this.session= session;
 		
 		// Track the index for debugging
 		this.index = index;
@@ -46,17 +36,13 @@ public class CurrentModificationThread extends Thread
 	
 	public void run()
 	{
-		// Get object reference
-		String objRef = Integer.toHexString(System.identityHashCode(httpSessionInfo));
-		
-	    // Use the reference from httpSessionInfo to populate the concurrentHashMap
-		ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = httpSessionInfo.getConcurrentHashMap();
+        String sessionID = session.getId();
+        ConcurrentHashMap<BigInteger, BigInteger> concurrentHashMap = new ConcurrentHashMap<>();		
 
 		if (index == 0) resetcounter = new AtomicInteger(0);
 		int resetcount = resetcounter.incrementAndGet();
 		int atomiccount = counter.incrementAndGet();
-		
-		//String debug = null;
+
 		BigInteger key1 = new BigInteger("1");
 		BigInteger key2 = new BigInteger("2");
 		BigInteger key3 = new BigInteger("3");
@@ -68,8 +54,10 @@ public class CurrentModificationThread extends Thread
 		concurrentHashMap.put(key2, bigindex);			
 		concurrentHashMap.put(key3, bigresetcount);
 
-		// Turning on near cache improves performance.
-		//session.setAttribute("user", httpSessionInfo);
-		System.out.println("CurrentModificationThread " + index + " " + objRef);
+		CacheManager.getCacheManager().setCacheData(sessionID, "docketList", concurrentHashMap);
+		
+		String debug = concurrentHashMap.toString();
+		String objRef = Integer.toHexString(System.identityHashCode(concurrentHashMap));
+        System.out.println("CurrentModificationThread " + index + " " + debug + " " + objRef);
 	}
 }
