@@ -1,5 +1,9 @@
-<distributed-cache name="session-cache" statistics="true">
+<distributed-cache name="session-cache" owners="2" statistics="true">
     <encoding media-type="application/x-java-object"/>
     <!-- encoding media-type="application/x-protostream"/ -->
+    <partition-handling when-split="ALLOW_READ_WRITES" merge-policy="REMOVE_ALL"/>
     <expiration lifespan="1800000"/> <!-- 30 min -->
+    <memory>
+        <binary eviction="MEMORY" size="400000000"/> <!-- 400 MB -->
+    </memory>
 </distributed-cache>
